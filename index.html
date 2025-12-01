@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swastik Ayurveda – चिकित्सालय व पंचकर्म केंद्र</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;700&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Config -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        sage: {
+                            50: '#f7f9f7',
+                            100: '#eef3ee',
+                            200: '#d5e2d5',
+                            300: '#b0cbb0',
+                            500: '#7fa37f', // Muted Green
+                            700: '#5a7a5a',
+                            800: '#465f46',
+                            900: '#384d38',
+                        },
+                        cream: {
+                            100: '#fdfbf7', // Soft Cream
+                            200: '#f7f3eb',
+                            300: '#eaddc5',
+                        },
+                        gold: {
+                            400: '#d4af37', // Ayurvedic Gold accent
+                            500: '#c5a028',
+                            600: '#b08d1e',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Lato"', 'sans-serif'],
+                        devanagari: ['"Noto Sans Devanagari"', 'sans-serif'],
+                    },
+                    backgroundImage: {
+                        // Backgrounds for other sections
+                        'services-pattern': "url('2.png')",
+                        'cta-pattern': "url('3.png')",
+                        'about-pattern': "url('2.png')", 
+                        'location-pattern': "url('4.png')",
+                        'footer-pattern': "url('5.png')",
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Styles for aesthetics */
+        body {
+            background-color: #fdfbf7; /* Cream-100 */
+        }
+        
+        /* Generic Faded Background Utility */
+        .bg-faded {
+            position: relative;
+        }
+        .bg-faded::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.08; /* Low opacity for subtlety */
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Specific section pattern overrides */
+        .bg-faded-about::before { background-image: var(--tw-bg-about-pattern); opacity: 0.1; }
+        .bg-faded-services::before { background-image: var(--tw-bg-services-pattern); opacity: 0.05; }
+        .bg-faded-cta::before { background-image: var(--tw-bg-cta-pattern); opacity: 0.1; mix-blend-mode: overlay;}
+        .bg-faded-location::before { background-image: var(--tw-bg-location-pattern); opacity: 0.08; }
+        .bg-faded-footer::before { background-image: var(--tw-bg-footer-pattern); opacity: 0.05; }
+
+        /* Flip Card Utilities */
+        .perspective-1000 { perspective: 1000px; }
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s;
+            transform-style: preserve-3d;
+        }
+        .group:hover .flip-card-inner { transform: rotateY(180deg); }
+        .backface-hidden { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+        .rotate-y-180 { transform: rotateY(180deg); }
+
+        /* Smooth reveal animation classes */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .glass-nav {
+            background: rgba(253, 251, 247, 0.98); /* Cream based glass */
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* Hero Slideshow Animation */
+        .slideshow-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            animation: slideshow 25s infinite;
+            filter: blur(4px); /* Blur effect as requested */
+        }
+
+        /* Animation Logic: 5 images, total 25s.
+           Each image visible for 5s (including fade).
+           Overlap fades slightly.
+        */
+        .slideshow-image:nth-child(1) { animation-delay: 0s; background-image: url('c1.jpg'); }
+        .slideshow-image:nth-child(2) { animation-delay: 5s; background-image: url('c2.jpg'); }
+        .slideshow-image:nth-child(3) { animation-delay: 10s; background-image: url('c3.jpg'); }
+        .slideshow-image:nth-child(4) { animation-delay: 15s; background-image: url('c4.jpg'); }
+        .slideshow-image:nth-child(5) { animation-delay: 20s; background-image: url('c5.jpg'); }
+
+        @keyframes slideshow {
+            0% { opacity: 0; }
+            4% { opacity: 1; } /* Fade in */
+            20% { opacity: 1; } /* Stay visible */
+            24% { opacity: 0; } /* Fade out */
+            100% { opacity: 0; }
+        }
+
+        /* Green Glow Text Effect */
+        .text-glow {
+            color: #ecfdf5; /* Very pale green/white base */
+            text-shadow: 
+                0 0 10px #4ade80, 
+                0 0 20px #22c55e, 
+                0 0 40px #166534;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #fdfbf7; }
+        ::-webkit-scrollbar-thumb { background: #b0cbb0; border-radius: 4px; }
+    </style>
+</head>
+<body class="text-gray-700 font-sans antialiased overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-nav transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-32">
+                <!-- Logo Area -->
+                <div class="flex items-center space-x-5">
+                    <!-- Larger Logo Container (Increased to h-28 w-28) -->
+                    <div class="h-28 w-28 relative flex items-center justify-center">
+                        <img src="logo.png" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'" alt="Swastik Logo" class="h-full w-full object-contain drop-shadow-sm">
+                        <div class="hidden w-20 h-20 bg-sage-700 rounded-full items-center justify-center text-white">
+                            <i data-lucide="flower-2" class="w-12 h-12"></i>
+                        </div>
+                    </div>
+                    <div class="flex flex-col justify-center">
+                        <h1 class="text-3xl font-serif font-bold text-sage-900 leading-none tracking-wide">SWASTIK</h1>
+                        <span class="text-sage-600 font-medium tracking-[0.2em] uppercase text-xs mt-1">Ayurveda</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex space-x-10 items-center">
+                    <a href="#about" class="text-sage-900 hover:text-gold-600 transition font-medium tracking-wider text-sm uppercase">About</a>
+                    <a href="#services" class="text-sage-900 hover:text-gold-600 transition font-medium tracking-wider text-sm uppercase">Therapies</a>
+                    <a href="#blog" class="text-sage-900 hover:text-gold-600 transition font-medium tracking-wider text-sm uppercase">Blog</a>
+                    <a href="#gallery" class="text-sage-900 hover:text-gold-600 transition font-medium tracking-wider text-sm uppercase">Gallery</a>
+                    <button type="button" onclick="openModal()" class="bg-sage-800 text-white px-8 py-3 rounded-full hover:bg-gold-600 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 flex items-center gap-2 border border-sage-700">
+                        <span class="font-serif tracking-wide">Book Now</span>
+                    </button>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-sage-900 focus:outline-none p-2">
+                        <i data-lucide="menu" class="w-8 h-8"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-cream-100 border-t border-sage-100 absolute w-full shadow-xl top-32 z-40">
+            <div class="px-6 py-8 space-y-6 text-center">
+                <a href="#about" class="block py-2 text-sage-800 font-medium text-lg">About</a>
+                <a href="#services" class="block py-2 text-sage-800 font-medium text-lg">Therapies</a>
+                <a href="#blog" class="block py-2 text-sage-800 font-medium text-lg">Blog</a>
+                <a href="#gallery" class="block py-2 text-sage-800 font-medium text-lg">Gallery</a>
+                <button type="button" onclick="openModal()" class="w-full mt-4 bg-sage-800 text-white px-6 py-4 rounded-lg hover:bg-gold-600 transition font-serif text-lg">
+                    Book Appointment
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section with Slideshow -->
+    <section class="relative h-screen flex items-center justify-center overflow-hidden bg-sage-900">
+        <!-- Slideshow Container -->
+        <div class="absolute inset-0 z-0">
+            <div class="slideshow-image"></div>
+            <div class="slideshow-image"></div>
+            <div class="slideshow-image"></div>
+            <div class="slideshow-image"></div>
+            <div class="slideshow-image"></div>
+        </div>
+        
+        <!-- Dark Overlay for Readability -->
+        <div class="absolute inset-0 bg-black/60 z-0"></div>
+
+        <div class="relative z-10 text-center px-4 max-w-4xl mx-auto text-white mt-20">
+            <!-- Mobile Logo -->
+            <div class="mb-8 flex justify-center md:hidden reveal">
+                 <img src="logo.png" onerror="this.style.display='none'" alt="Swastik Logo" class="h-32 w-auto opacity-100 drop-shadow-2xl filter brightness-0 invert">
+            </div>
+
+            <!-- Main Heading with Green Glow -->
+            <h2 class="text-5xl md:text-7xl font-devanagari mb-6 reveal font-bold tracking-wide leading-tight text-glow">
+                स्वास्तिक आयुर्वेद
+            </h2>
+            <p class="text-2xl md:text-4xl font-light mb-8 reveal text-sage-100 tracking-wider font-devanagari drop-shadow-md">
+                चिकित्सालय व पंचकर्म केंद्र
+            </p>
+            
+            <div class="w-40 h-1 bg-gold-400 mx-auto my-10 rounded-full reveal shadow-lg box-shadow-glow"></div>
+            
+            <p class="text-xl md:text-2xl font-serif italic mb-12 reveal text-cream-100 tracking-wide">
+                Ayurvedic Physician: Vd. Palash Bandhekar
+            </p>
+            
+            <button type="button" onclick="openModal()" class="reveal group bg-cream-100 text-sage-900 px-12 py-5 rounded-full font-serif font-bold text-lg hover:bg-white transition shadow-2xl transform hover:scale-105 flex items-center gap-3 mx-auto border-2 border-transparent hover:border-gold-400">
+                Book Consultation
+                <i data-lucide="arrow-right" class="w-6 h-6 group-hover:translate-x-1 transition-transform"></i>
+            </button>
+        </div>
+        
+        <!-- Scroll Down Indicator -->
+        <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce text-white/80">
+            <i data-lucide="chevron-down" class="w-10 h-10"></i>
+        </div>
+    </section>
+
+    <!-- About Section with Doctor Photo -->
+    <!-- Updated Layout: Image Left, Text Right on Desktop -->
+    <section id="about" class="py-32 bg-sage-50 bg-faded bg-faded-about overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-20 items-center">
+                
+                <!-- Image Side (Left on Desktop, Top/Center on Mobile) -->
+                <div class="relative reveal order-1 md:order-1 flex justify-center md:justify-start">
+                    <div class="relative w-[300px] h-[300px] md:w-[450px] md:h-[450px]">
+                        <!-- Decorative Circle Behind -->
+                        <div class="absolute inset-0 bg-sage-200/50 rounded-full transform -translate-x-4 -translate-y-4"></div>
+                        <!-- Border Ring -->
+                        <div class="absolute -inset-4 border border-gold-400/30 rounded-full"></div>
+                        
+                        <!-- Profile Image -->
+                        <img src="doc.JPG" alt="Vd. Palash Bandhekar" class="relative rounded-full shadow-2xl w-full h-full object-cover z-10 border-4 border-white">
+                        
+                        <!-- Floating Badge -->
+                        <div class="absolute bottom-6 -right-2 z-20 bg-white p-4 rounded-xl shadow-xl border-l-4 border-gold-500 hidden md:block">
+                            <p class="font-serif text-sage-900 text-sm font-bold">Ayurvedic Physician</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Side (Right on Desktop) -->
+                <div class="reveal order-2 md:order-2">
+                    <div class="flex items-center gap-3 mb-6 justify-center md:justify-start">
+                        <div class="h-px w-12 bg-gold-500"></div>
+                        <h4 class="text-gold-600 font-bold uppercase tracking-[0.2em] text-sm">About The Doctor</h4>
+                    </div>
+                    <h2 class="text-4xl md:text-5xl font-serif text-sage-900 mb-8 leading-tight text-center md:text-left">Vd. Palash Bandhekar</h2>
+                    <p class="text-gray-600 mb-6 leading-loose text-lg font-light text-center md:text-left">
+                        Dedicated to the ancient wisdom of Ayurveda, <span class="font-semibold text-sage-800">Vd. Palash Bandhekar</span> brings a holistic approach to healing. Combining deep traditional knowledge with compassionate care, he specializes in Nadi Pariksha to understand your unique Prakriti.
+                    </p>
+                    <p class="text-gray-600 mb-10 leading-loose text-lg font-light text-center md:text-left">
+                        At Swastik Ayurveda, his mission is to provide authentic Panchakarma therapies that restore the delicate balance between body, mind, and soul.
+                    </p>
+                    
+                    <div class="flex gap-10 mt-8 border-t border-sage-200 pt-8 justify-center md:justify-start">
+                        <div class="text-center">
+                            <h3 class="text-4xl font-serif text-sage-700">100%</h3>
+                            <p class="text-xs text-sage-500 uppercase tracking-widest mt-2">Natural</p>
+                        </div>
+                        <div class="w-px bg-sage-200 h-16"></div>
+                        <div class="text-center">
+                            <h3 class="text-4xl font-serif text-sage-700">Expert</h3>
+                            <p class="text-xs text-sage-500 uppercase tracking-widest mt-2">Healer</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-32 bg-white relative bg-faded bg-faded-services">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-24 reveal">
+                <span class="text-gold-500 font-serif italic text-xl mb-4 block">Holistic Treatments</span>
+                <h2 class="text-5xl font-serif text-sage-900 mb-6">Therapeutic Services</h2>
+                <div class="w-32 h-px bg-sage-300 mx-auto"></div>
+            </div>
+
+            <!-- 3-Column Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+                
+                <!-- Service 1 -->
+                <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-500 border border-gray-100 reveal">
+                    <div class="h-64 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-sage-900/10 group-hover:bg-sage-900/0 transition z-10"></div>
+                        <img src="1.png" alt="Shirodhara" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-1000">
+                    </div>
+                    <div class="p-8 text-center relative">
+                        <h3 class="text-2xl font-serif text-sage-900 mb-4 group-hover:text-gold-600 transition">Shirodhara & Panchakarma</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed mb-6">Complete detoxification using ancient cleansing methods.</p>
+                        <a href="javascript:void(0)" onclick="openModal()" class="text-sage-600 text-xs font-bold uppercase tracking-widest hover:text-gold-600 transition border-b border-sage-200 pb-1">Read More</a>
+                    </div>
+                </div>
+
+                <!-- Service 2 -->
+                <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-500 border border-gray-100 reveal delay-100">
+                    <div class="h-64 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-sage-900/10 group-hover:bg-sage-900/0 transition z-10"></div>
+                        <img src="2.png" alt="Herbal Therapy" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-1000">
+                    </div>
+                    <div class="p-8 text-center relative">
+                        <h3 class="text-2xl font-serif text-sage-900 mb-4 group-hover:text-gold-600 transition">Nadi Pariksha</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed mb-6">Precise pulse diagnosis and authentic herbal remedies.</p>
+                        <a href="javascript:void(0)" onclick="openModal()" class="text-sage-600 text-xs font-bold uppercase tracking-widest hover:text-gold-600 transition border-b border-sage-200 pb-1">Read More</a>
+                    </div>
+                </div>
+
+                <!-- Service 3 -->
+                <div class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition duration-500 border border-gray-100 reveal delay-200">
+                    <div class="h-64 overflow-hidden relative">
+                        <div class="absolute inset-0 bg-sage-900/10 group-hover:bg-sage-900/0 transition z-10"></div>
+                        <img src="3.png" alt="Detox" class="w-full h-full object-cover transform group-hover:scale-105 transition duration-1000">
+                    </div>
+                    <div class="p-8 text-center relative">
+                        <h3 class="text-2xl font-serif text-sage-900 mb-4 group-hover:text-gold-600 transition">Detox & Rejuvenation</h3>
+                        <p class="text-gray-500 text-sm leading-relaxed mb-6">Deep tissue rejuvenation in a serene environment.</p>
+                        <a href="javascript:void(0)" onclick="openModal()" class="text-sage-600 text-xs font-bold uppercase tracking-widest hover:text-gold-600 transition border-b border-sage-200 pb-1">Read More</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section: FLIP CARDS -->
+    <section id="blog" class="py-32 bg-cream-100 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-20 reveal">
+                <span class="text-gold-500 font-serif italic text-lg mb-2 block">Our Knowledge Base</span>
+                <h2 class="text-4xl font-serif text-sage-900 mb-6">Ayurveda Insights & Wellness Blogs</h2>
+                <div class="w-24 h-px bg-sage-300 mx-auto"></div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 h-80">
+                
+                <!-- Blog Flip Card 1 -->
+                <div class="group h-full w-full perspective-1000 reveal">
+                    <div class="flip-card-inner shadow-md hover:shadow-2xl rounded-2xl">
+                        
+                        <!-- Front (Title + BG) -->
+                        <div class="absolute inset-0 h-full w-full rounded-2xl backface-hidden flex flex-col items-center justify-center text-center p-8 bg-white overflow-hidden border border-sage-100">
+                             <!-- Subtle BG Image 1.png -->
+                            <div class="absolute inset-0 bg-[url('1.png')] bg-cover bg-center opacity-10"></div>
+                            <div class="relative z-10">
+                                <span class="text-gold-600 text-xs font-bold uppercase tracking-widest mb-3 block">Therapy</span>
+                                <h3 class="text-2xl font-serif text-sage-900 font-bold">Benefits of Panchakarma</h3>
+                                <div class="w-12 h-0.5 bg-sage-200 mx-auto mt-4"></div>
+                            </div>
+                        </div>
+
+                        <!-- Back (Content) -->
+                        <div class="absolute inset-0 h-full w-full rounded-2xl bg-sage-800 backface-hidden rotate-y-180 flex flex-col items-center justify-center text-center p-8 border border-sage-700">
+                            <p class="text-sage-100 text-sm leading-relaxed mb-6 font-light">
+                                "Panchakarma is the ultimate mind-body healing experience for detoxifying the body, strengthening the immune system, and restoring balance and well-being."
+                            </p>
+                            <a href="javascript:void(0)" class="inline-block px-6 py-2 border border-white/30 rounded-full text-white text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-sage-900 transition">Read More</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Flip Card 2 -->
+                <div class="group h-full w-full perspective-1000 reveal delay-100">
+                    <div class="flip-card-inner shadow-md hover:shadow-2xl rounded-2xl">
+                        
+                        <!-- Front -->
+                        <div class="absolute inset-0 h-full w-full rounded-2xl backface-hidden flex flex-col items-center justify-center text-center p-8 bg-white overflow-hidden border border-sage-100">
+                            <!-- Subtle BG Image 2.png -->
+                            <div class="absolute inset-0 bg-[url('2.png')] bg-cover bg-center opacity-10"></div>
+                            <div class="relative z-10">
+                                <span class="text-gold-600 text-xs font-bold uppercase tracking-widest mb-3 block">Lifestyle</span>
+                                <h3 class="text-2xl font-serif text-sage-900 font-bold">Daily Ayurvedic Routine</h3>
+                                <div class="w-12 h-0.5 bg-sage-200 mx-auto mt-4"></div>
+                            </div>
+                        </div>
+
+                        <!-- Back -->
+                        <div class="absolute inset-0 h-full w-full rounded-2xl bg-sage-800 backface-hidden rotate-y-180 flex flex-col items-center justify-center text-center p-8 border border-sage-700">
+                            <p class="text-sage-100 text-sm leading-relaxed mb-6 font-light">
+                                "Dinacharya encourages us to align our daily habits with the cycles of nature, promoting digestion, absorption, and assimilation to generate self-esteem, discipline, and peace."
+                            </p>
+                            <a href="javascript:void(0)" class="inline-block px-6 py-2 border border-white/30 rounded-full text-white text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-sage-900 transition">Read More</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Blog Flip Card 3 -->
+                <div class="group h-full w-full perspective-1000 reveal delay-200">
+                    <div class="flip-card-inner shadow-md hover:shadow-2xl rounded-2xl">
+                        
+                        <!-- Front -->
+                        <div class="absolute inset-0 h-full w-full rounded-2xl backface-hidden flex flex-col items-center justify-center text-center p-8 bg-white overflow-hidden border border-sage-100">
+                            <!-- Subtle BG Image 3.png -->
+                            <div class="absolute inset-0 bg-[url('3.png')] bg-cover bg-center opacity-10"></div>
+                            <div class="relative z-10">
+                                <span class="text-gold-600 text-xs font-bold uppercase tracking-widest mb-3 block">Herbs</span>
+                                <h3 class="text-2xl font-serif text-sage-900 font-bold">Healing Herbs for Immunity</h3>
+                                <div class="w-12 h-0.5 bg-sage-200 mx-auto mt-4"></div>
+                            </div>
+                        </div>
+
+                        <!-- Back -->
+                        <div class="absolute inset-0 h-full w-full rounded-2xl bg-sage-800 backface-hidden rotate-y-180 flex flex-col items-center justify-center text-center p-8 border border-sage-700">
+                            <p class="text-sage-100 text-sm leading-relaxed mb-6 font-light">
+                                "Discover nature's pharmacy. Herbs like Ashwagandha, Tulsi, and Turmeric are powerful allies in boosting your body's natural defense mechanisms."
+                            </p>
+                            <a href="javascript:void(0)" class="inline-block px-6 py-2 border border-white/30 rounded-full text-white text-xs font-bold uppercase tracking-widest hover:bg-white hover:text-sage-900 transition">Read More</a>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery Section -->
+    <section id="gallery" class="py-32 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-20 reveal">
+                <h2 class="text-5xl font-serif text-sage-900">Gallery</h2>
+                <div class="w-24 h-1 bg-gold-400 mx-auto mt-6 rounded-full"></div>
+            </div>
+            
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div class="aspect-square overflow-hidden rounded-xl group reveal hover:shadow-lg transition">
+                    <img src="c1.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 1">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-75 hover:shadow-lg transition">
+                    <img src="c2.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 2">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-75 hover:shadow-lg transition">
+                    <img src="c3.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 3">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c4.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 4">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c5.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 5">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c6.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 6">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c7.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 7">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c8.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 8">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c9.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 9">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c10.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 10">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c11.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 11">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c12.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 12">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c13.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 13">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c14.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 14">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c15.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 15">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c16.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 16">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-xl group reveal delay-100 hover:shadow-lg transition">
+                    <img src="c17.jpg" class="w-full h-full object-cover transition duration-700 group-hover:scale-110" alt="Gallery Image 17">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Location Section -->
+    <section id="location" class="py-32 bg-sage-50 relative bg-faded bg-faded-location">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center reveal">
+            <div class="inline-block p-4 bg-white rounded-full shadow-md mb-6">
+                <i data-lucide="map-pin" class="w-8 h-8 text-gold-600"></i>
+            </div>
+            <h2 class="text-4xl font-serif text-sage-900 mb-6">Visit Swastik Ayurveda</h2>
+            <p class="text-xl text-gray-600 font-light mb-8 max-w-2xl mx-auto leading-relaxed">
+                Plot No. 03, Khamla Rd, Behind Aruj Bajaj Showroom,<br>
+                Vyankatesh Nagar, Khamla, Nagpur, Maharashtra 440015
+            </p>
+            
+            <a href="https://share.google/N2nnDO7iYhSVjsQlm" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-2 bg-sage-800 text-white px-8 py-4 rounded-full hover:bg-gold-600 transition shadow-lg hover:shadow-xl font-serif tracking-wide">
+                <i data-lucide="navigation" class="w-5 h-5"></i>
+                Get Directions
+            </a>
+        </div>
+    </section>
+
+    <!-- Appointment CTA Section -->
+    <section class="py-32 bg-sage-800 text-white relative overflow-hidden bg-faded bg-faded-cta">
+        <!-- Abstract Background Shapes overlay on top of 3.png -->
+        <div class="absolute top-0 left-0 w-64 h-64 bg-sage-700 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-gold-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 text-center relative z-10 reveal">
+            <h2 class="text-4xl md:text-6xl font-serif mb-8 leading-tight">Start Your Healing Journey</h2>
+            <p class="text-sage-100 mb-12 text-xl font-light max-w-2xl mx-auto">Scan to Book Appointment with Vd. Palash Bandhekar</p>
+            
+            <div class="bg-white p-6 rounded-3xl inline-block shadow-2xl transform hover:scale-105 transition duration-300 cursor-pointer group" onclick="openModal()">
+                 <!-- QR Code Image 6.jpg - Reduced size slightly to w-60 h-60 (approx 240px) -->
+                <div class="relative overflow-hidden rounded-xl">
+                    <img src="6.jpg" alt="Scan to Book" class="w-60 h-60 object-cover mx-auto">
+                </div>
+                <p class="text-sage-900 text-sm font-bold mt-4 uppercase tracking-[0.2em]">Scan Me</p>
+            </div>
+            
+            <div class="mt-12">
+                <button type="button" onclick="openModal()" class="border border-white/30 bg-white/10 backdrop-blur-sm text-white px-12 py-4 rounded-full hover:bg-white hover:text-sage-900 transition font-serif text-lg tracking-wide">
+                    Or Click to View QR
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-sage-900 text-sage-100 py-20 border-t border-sage-800 bg-faded bg-faded-footer relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12">
+                
+                <!-- Brand -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-4 mb-8">
+                        <!-- Footer Logo logo.png -->
+                        <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center p-3 shadow-lg">
+                             <img src="logo.png" onerror="this.style.display='none'" class="w-full h-full object-contain">
+                        </div>
+                        <h3 class="text-3xl font-serif text-white tracking-wide">Swastik Ayurveda</h3>
+                    </div>
+                    <p class="text-sage-300 text-sm leading-loose max-w-sm mb-8 font-light">
+                        A dedicated center for authentic Ayurvedic healing. We strive to bring balance to your life through nature's remedies and ancient therapies.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="javascript:void(0)" class="w-10 h-10 rounded-full bg-sage-800 flex items-center justify-center hover:bg-gold-500 hover:text-white transition text-sage-300"><i data-lucide="instagram" class="w-5 h-5"></i></a>
+                        <a href="javascript:void(0)" class="w-10 h-10 rounded-full bg-sage-800 flex items-center justify-center hover:bg-gold-500 hover:text-white transition text-sage-300"><i data-lucide="facebook" class="w-5 h-5"></i></a>
+                        <a href="javascript:void(0)" class="w-10 h-10 rounded-full bg-sage-800 flex items-center justify-center hover:bg-gold-500 hover:text-white transition text-sage-300"><i data-lucide="mail" class="w-5 h-5"></i></a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h4 class="text-gold-400 font-bold mb-8 uppercase tracking-widest text-xs">Explore</h4>
+                    <ul class="space-y-4 text-sm font-light text-sage-300">
+                        <li><a href="#about" class="hover:text-white transition flex items-center gap-2"><span class="w-1 h-1 bg-gold-500 rounded-full"></span> About Us</a></li>
+                        <li><a href="#services" class="hover:text-white transition flex items-center gap-2"><span class="w-1 h-1 bg-gold-500 rounded-full"></span> Therapies</a></li>
+                        <li><a href="#blog" class="hover:text-white transition flex items-center gap-2"><span class="w-1 h-1 bg-gold-500 rounded-full"></span> Blog</a></li>
+                        <li><a href="#gallery" class="hover:text-white transition flex items-center gap-2"><span class="w-1 h-1 bg-gold-500 rounded-full"></span> Gallery</a></li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div>
+                    <h4 class="text-gold-400 font-bold mb-8 uppercase tracking-widest text-xs">Visit Us</h4>
+                    <div class="space-y-6 text-sm font-light text-sage-300">
+                        <p class="flex gap-4 items-start">
+                            <i data-lucide="map-pin" class="w-5 h-5 text-sage-500 shrink-0 mt-1"></i>
+                            <span class="leading-relaxed">Nagpur, Maharashtra, India</span>
+                        </p>
+                        <p class="flex gap-4 items-center">
+                            <i data-lucide="phone" class="w-5 h-5 text-sage-500 shrink-0"></i>
+                            <span>+91 98765 43210</span>
+                        </p>
+                         <p class="flex gap-4 items-center">
+                            <i data-lucide="clock" class="w-5 h-5 text-sage-500 shrink-0"></i>
+                            <span>Mon - Sat: 10:00 AM - 8:00 PM</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-20 pt-10 border-t border-sage-800 text-center flex flex-col md:flex-row justify-between items-center text-xs text-sage-400 font-light">
+                <p>&copy; 2024 Swastik Ayurveda. All rights reserved.</p>
+                <p class="mt-2 md:mt-0">Designed with <span class="text-red-400">❤</span> for Ayurveda</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- QR Code Modal -->
+    <div id="bookingModal" class="fixed inset-0 z-[60] hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-sage-900/90 backdrop-blur-md transition-opacity" onclick="closeModal()"></div>
+        
+        <!-- Modal Content -->
+        <div class="relative min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white rounded-[2rem] shadow-2xl max-w-md w-full p-10 relative transform scale-95 transition-transform duration-300 animate-fade-in-up border-8 border-sage-50">
+                <button type="button" onclick="closeModal()" class="absolute top-5 right-5 text-gray-400 hover:text-gray-900 transition p-2 hover:bg-gray-100 rounded-full">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+                
+                <div class="text-center">
+                    <div class="bg-sage-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6 border border-sage-100">
+                        <i data-lucide="calendar-check" class="w-10 h-10 text-sage-600"></i>
+                    </div>
+                    <h3 class="text-3xl font-serif text-sage-900 mb-3">Book Appointment</h3>
+                    <p class="text-gray-500 mb-10 font-light text-sm">Scan the code below to schedule a consultation via WhatsApp.</p>
+                    
+                    <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-xl inline-block mb-8">
+                        <!-- Updated to 6.jpg - Reduced size slightly to w-60 h-60 for consistency with CTA -->
+                        <img src="6.jpg" alt="Booking QR" class="w-60 h-60 mx-auto rounded-lg object-contain">
+                    </div>
+                    
+                    <div class="flex items-center justify-center gap-3 mb-8">
+                        <div class="h-px w-12 bg-gray-200"></div>
+                        <span class="text-xs text-gray-400 uppercase tracking-widest">Or Call Us</span>
+                        <div class="h-px w-12 bg-gray-200"></div>
+                    </div>
+
+                    <a href="tel:+919876543210" class="block w-full bg-sage-800 text-white py-4 rounded-xl hover:bg-gold-600 transition font-medium shadow-lg shadow-sage-200 text-lg">
+                        Call Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Initialize Icons
+        lucide.createIcons();
+
+        // Mobile Menu Toggle
+        const menuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        let isMenuOpen = false;
+        
+        menuBtn.addEventListener('click', () => {
+            isMenuOpen = !isMenuOpen;
+            if(isMenuOpen) {
+                mobileMenu.classList.remove('hidden');
+                menuBtn.innerHTML = '<i data-lucide="x" class="w-8 h-8"></i>';
+            } else {
+                mobileMenu.classList.add('hidden');
+                menuBtn.innerHTML = '<i data-lucide="menu" class="w-8 h-8"></i>';
+            }
+            lucide.createIcons();
+        });
+
+        // Sticky Navbar effect with glassmorphism
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                navbar.classList.add('shadow-md');
+                navbar.classList.add('bg-cream-100/95');
+            } else {
+                navbar.classList.remove('shadow-md');
+            }
+        });
+
+        // Scroll Reveal Animation
+        function reveal() {
+            var reveals = document.querySelectorAll(".reveal");
+            for (var i = 0; i < reveals.length; i++) {
+                var windowHeight = window.innerHeight;
+                var elementTop = reveals[i].getBoundingClientRect().top;
+                var elementVisible = 100;
+                if (elementTop < windowHeight - elementVisible) {
+                    reveals[i].classList.add("active");
+                }
+            }
+        }
+        window.addEventListener("scroll", reveal);
+        // Trigger once on load
+        reveal();
+
+        // Modal Logic
+        const modal = document.getElementById('bookingModal');
+        
+        function openModal() {
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeModal() {
+            modal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
